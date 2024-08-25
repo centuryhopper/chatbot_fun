@@ -1,0 +1,55 @@
+﻿@page "/"
+@inject HttpClient Http
+
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app, my friend
+
+
+<input type="text" class="form-control mt-3" @bind-value="input">
+    
+<button class="btn btn-primary mt-3 mb-3" @onclick="() => HandleInput()">Ask Chat Bot</button>
+
+<div class="m-5">
+    @if (isLoading)
+    {
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    }
+
+    @result
+</div>
+
+@* give me some recommendations for good restaurants in orlando fl. Provide me at least 5. And please be specific. *@
+
+@code {
+    private string result { get;set; }
+    private string input { get;set; }
+    private bool isLoading { get;set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private async Task HandleInput()
+    {
+        isLoading = true;
+        result = "";
+        var response = await Http.GetAsync($"api/ChatBot/chat-bot-response?input={input}");
+        if (response.IsSuccessStatusCode)
+        {
+            result = await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            result = "something went wrong";
+        }
+        isLoading = false;
+    }
+
+
+}
